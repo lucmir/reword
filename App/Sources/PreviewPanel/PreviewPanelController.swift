@@ -55,7 +55,8 @@ final class PreviewPanelController {
                 backing: .buffered,
                 defer: false
             )
-            panel.titleVisibility = .hidden
+            panel.title = "Rewrite"
+            panel.titleVisibility = .visible
             panel.titlebarAppearsTransparent = true
             panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
             panel.standardWindowButton(.zoomButton)?.isHidden = true

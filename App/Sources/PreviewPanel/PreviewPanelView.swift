@@ -10,7 +10,7 @@ struct PreviewPanelView: View {
             footer
         }
         .padding([.horizontal, .bottom], 14)
-        .padding(.top, 30) // clears the titlebar close button
+        .padding(.top, 18) // below the titlebar ("Rewrite" + close button)
         .frame(width: 400)
     }
 
