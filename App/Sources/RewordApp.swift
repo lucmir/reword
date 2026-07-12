@@ -23,10 +23,12 @@ final class AppServices: ObservableObject {
         panel: panel
     )
     private var hotkeyManager: HotkeyManager?
+    private let onboarding = OnboardingWindowController()
 
     private init() {}
 
     func start() {
+        onboarding.showIfNeeded()
         hotkeyManager = HotkeyManager { [weak self] in
             self?.coordinator.run()
         }
