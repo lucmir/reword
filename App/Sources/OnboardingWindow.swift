@@ -30,9 +30,15 @@ final class OnboardingWindowController {
 
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
-                if AXIsProcessTrusted() {
-                    self?.timer?.invalidate()
-                    self?.window?.close()
+                guard let self else { return }
+                let windowVisible = self.window?.isVisible ?? false
+                if AXIsProcessTrusted() || !windowVisible {
+                    self.timer?.invalidate()
+                    self.timer = nil
+                    if AXIsProcessTrusted() {
+                        self.window?.close()
+                    }
+                    self.window = nil
                 }
             }
         }
