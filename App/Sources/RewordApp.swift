@@ -45,9 +45,7 @@ struct RewordApp: App {
 
     var body: some Scene {
         MenuBarExtra("Reword", systemImage: "wand.and.stars") {
-            SettingsLink {
-                Text("Settings…")
-            }
+            SettingsMenuItem()
             Divider()
             Button("Quit Reword") {
                 NSApp.terminate(nil)
@@ -55,6 +53,20 @@ struct RewordApp: App {
         }
         Settings {
             SettingsView()
+        }
+    }
+}
+
+/// Opens Settings and activates the app. A plain `SettingsLink` in an
+/// LSUIElement app opens the window without activating, leaving it buried
+/// behind the frontmost app's windows.
+private struct SettingsMenuItem: View {
+    @Environment(\.openSettings) private var openSettings
+
+    var body: some View {
+        Button("Settings…") {
+            NSApp.activate(ignoringOtherApps: true)
+            openSettings()
         }
     }
 }
