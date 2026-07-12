@@ -15,6 +15,12 @@ struct PreviewPanelView: View {
 
     private var header: some View {
         HStack {
+            Button {
+                model.onDismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+            }
+            .buttonStyle(.plain)
             Image(systemName: "wand.and.stars")
             Picker("", selection: $model.selectedPresetID) {
                 ForEach(model.presets) { preset in
@@ -27,12 +33,6 @@ struct PreviewPanelView: View {
                 model.onRetry()
             }
             Spacer()
-            Button {
-                model.onDismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-            }
-            .buttonStyle(.plain)
         }
     }
 
@@ -51,6 +51,7 @@ struct PreviewPanelView: View {
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .scrollIndicators(.visible)
             .frame(maxHeight: 180)
         case .error(let message):
             Label(message, systemImage: "exclamationmark.triangle")

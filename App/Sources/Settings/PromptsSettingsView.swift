@@ -57,6 +57,8 @@ struct PromptsSettingsView: View {
 private struct PresetEditor: View {
     @State var preset: Preset
     let store: PromptStore
+    @State private var showSaved = false
+    @State private var hideSavedTask: Task<Void, Never>?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -68,11 +70,25 @@ private struct PresetEditor: View {
             HStack {
                 Button("Make default") {
                     store.setDefault(id: preset.id)
+                    preset.isDefault = true
                 }
                 .disabled(preset.isDefault)
                 Spacer()
+                if showSaved {
+                    Label("Saved", systemImage: "checkmark")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .transition(.opacity)
+                }
                 Button("Save") {
                     store.update(preset)
+                    withAnimation { showSaved = true }
+                    hideSavedTask?.cancel()
+                    hideSavedTask = Task {
+                        try? await Task.sleep(for: .seconds(2))
+                        guard !Task.isCancelled else { return }
+                        withAnimation { showSaved = false }
+                    }
                 }
                 .keyboardShortcut(.defaultAction)
             }

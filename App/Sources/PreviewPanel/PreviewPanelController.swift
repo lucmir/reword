@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// NSPanel that closes on Esc without needing key-window status tricks.
@@ -15,6 +16,31 @@ final class PreviewPanelController {
     let viewModel = PanelViewModel()
     private var panel: DismissablePanel?
     private var escMonitors: [Any] = []
+    private var cancellables: Set<AnyCancellable> = []
+
+    init() {
+        // The panel is sized when shown (usually in the loading state); grow or
+        // shrink it when the content changes to a result or an error.
+        viewModel.$state
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                DispatchQueue.main.async { self?.resizeToFit() }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func resizeToFit() {
+        guard let panel, panel.isVisible, let contentView = panel.contentView else { return }
+        let fitting = contentView.fittingSize
+        let newHeight = max(fitting.height, 160)
+        guard abs(panel.frame.height - newHeight) > 1 else { return }
+        // Keep the top edge anchored so the panel grows downward-stable
+        // relative to where it appeared.
+        var frame = panel.frame
+        frame.origin.y += frame.height - newHeight
+        frame.size = NSSize(width: 400, height: newHeight)
+        panel.setFrame(frame, display: true, animate: true)
+    }
 
     func show() {
         if panel == nil {
