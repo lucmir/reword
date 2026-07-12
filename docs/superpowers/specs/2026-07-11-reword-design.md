@@ -50,7 +50,7 @@ protocol AIProvider {
     func transform(text: String, prompt: String) async throws -> String
 }
 ```
-V1 ships `AnthropicProvider`: direct `URLSession` calls to the Anthropic Messages API (no SDK dependency). The preset's prompt is the system prompt; the captured text is the user message. Model configurable in settings (sensible default, e.g. a fast/cheap current model). 30s timeout. Errors mapped to a typed `AIError` (noKey, auth, rateLimit, network, server) for user-facing messages.
+V1 ships `AnthropicProvider`: direct `URLSession` calls to the Anthropic Messages API (no SDK dependency). The preset's prompt is the system prompt; the captured text is the user message. Model configurable in settings; default `claude-opus-4-8`, with `claude-sonnet-5` and `claude-haiku-4-5` offered in the picker as faster/cheaper options. 30s timeout. Errors mapped to a typed `AIError` (noKey, auth, rateLimit, network, server) for user-facing messages.
 
 ### 5. PreviewPanel
 Floating, non-activating `NSPanel` hosting a SwiftUI view, positioned near the mouse/selection. States:
