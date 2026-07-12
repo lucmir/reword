@@ -50,4 +50,24 @@ final class PromptStoreTests: XCTestCase {
         store.update(preset)
         XCTAssertEqual(PromptStore(fileURL: tempURL).presets[0].prompt, "New prompt text.")
     }
+
+    func testCannotDeleteLastPreset() {
+        let store = PromptStore(fileURL: tempURL)
+        for preset in store.presets.dropFirst() {
+            store.delete(id: preset.id)
+        }
+        XCTAssertEqual(store.presets.count, 1)
+        let last = store.presets[0]
+        store.delete(id: last.id)
+        XCTAssertEqual(store.presets, [last])
+        XCTAssertEqual(store.defaultPreset.id, last.id)
+    }
+
+    func testSetDefaultWithUnknownIDIsNoOp() {
+        let store = PromptStore(fileURL: tempURL)
+        let before = store.presets
+        store.setDefault(id: UUID())
+        XCTAssertEqual(store.presets, before)
+        XCTAssertEqual(store.presets.filter(\.isDefault).count, 1)
+    }
 }

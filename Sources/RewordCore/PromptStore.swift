@@ -37,6 +37,7 @@ public final class PromptStore: ObservableObject {
     }
 
     public func delete(id: UUID) {
+        if presets.count == 1, presets[0].id == id { return }
         presets.removeAll { $0.id == id }
         if !presets.isEmpty, !presets.contains(where: \.isDefault) {
             presets[0].isDefault = true
@@ -45,6 +46,7 @@ public final class PromptStore: ObservableObject {
     }
 
     public func setDefault(id: UUID) {
+        guard presets.contains(where: { $0.id == id }) else { return }
         for index in presets.indices {
             presets[index].isDefault = (presets[index].id == id)
         }
