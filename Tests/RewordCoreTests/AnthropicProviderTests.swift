@@ -74,6 +74,7 @@ final class AnthropicProviderTests: XCTestCase {
         XCTAssertEqual(captured?.httpMethod, "POST")
         XCTAssertEqual(captured?.value(forHTTPHeaderField: "x-api-key"), "sk-test")
         XCTAssertEqual(captured?.value(forHTTPHeaderField: "anthropic-version"), "2023-06-01")
+        XCTAssertEqual(captured?.timeoutInterval, 30)
 
         let body = try XCTUnwrap(
             JSONSerialization.jsonObject(with: XCTUnwrap(capturedBody)) as? [String: Any]
@@ -126,6 +127,18 @@ final class AnthropicProviderTests: XCTestCase {
             XCTFail("expected throw")
         } catch {
             XCTAssertEqual(error as? AIError, .invalidResponse)
+        }
+    }
+
+    func testConnectionFailureThrowsNetwork() async {
+        MockURLProtocol.handler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+        do {
+            _ = try await makeProvider().transform(text: "x", prompt: "y")
+            XCTFail("expected throw")
+        } catch {
+            XCTAssertEqual(error as? AIError, .network)
         }
     }
 }
