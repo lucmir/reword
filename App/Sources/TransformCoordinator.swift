@@ -28,6 +28,8 @@ final class TransformCoordinator {
     }
 
     func run() {
+        task?.cancel()
+
         panel.viewModel.presets = promptStore.presets
         panel.viewModel.selectedPresetID = promptStore.defaultPreset.id
 
@@ -55,17 +57,18 @@ final class TransformCoordinator {
 
         task?.cancel()
         task = Task { [weak self] in
+            guard let self else { return }
             do {
-                let result = try await self!.provider.transform(text: captured.text, prompt: preset.prompt)
+                let result = try await self.provider.transform(text: captured.text, prompt: preset.prompt)
                 guard !Task.isCancelled else { return }
-                self?.currentResult = result
-                self?.panel.viewModel.state = .result(result)
+                self.currentResult = result
+                self.panel.viewModel.state = .result(result)
             } catch let error as AIError {
                 guard !Task.isCancelled else { return }
-                self?.panel.viewModel.state = .error(error.userMessage)
+                self.panel.viewModel.state = .error(error.userMessage)
             } catch {
                 guard !Task.isCancelled else { return }
-                self?.panel.viewModel.state = .error("Something went wrong. Try again.")
+                self.panel.viewModel.state = .error("Something went wrong. Try again.")
             }
         }
     }
