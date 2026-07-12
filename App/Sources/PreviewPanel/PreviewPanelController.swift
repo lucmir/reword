@@ -14,6 +14,7 @@ private final class DismissablePanel: NSPanel {
 final class PreviewPanelController {
     let viewModel = PanelViewModel()
     private var panel: DismissablePanel?
+    private var escMonitors: [Any] = []
 
     func show() {
         if panel == nil {
@@ -33,12 +34,39 @@ final class PreviewPanelController {
             panel.onCancel = { [weak self] in self?.viewModel.onDismiss() }
             self.panel = panel
         }
+        if let contentView = panel?.contentView {
+            let fitting = contentView.fittingSize
+            panel?.setContentSize(NSSize(width: 400, height: max(fitting.height, 160)))
+        }
         positionNearMouse()
         panel?.orderFrontRegardless()
+        installEscMonitors()
     }
 
     func close() {
+        removeEscMonitors()
         panel?.orderOut(nil)
+    }
+
+    private func installEscMonitors() {
+        guard escMonitors.isEmpty else { return }
+        let handler: () -> Void = { [weak self] in self?.viewModel.onDismiss() }
+        if let local = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { event in
+            if event.keyCode == 53 { handler(); return nil }
+            return event
+        }) {
+            escMonitors.append(local)
+        }
+        if let global = NSEvent.addGlobalMonitorForEvents(matching: .keyDown, handler: { event in
+            if event.keyCode == 53 { handler() }
+        }) {
+            escMonitors.append(global)
+        }
+    }
+
+    private func removeEscMonitors() {
+        escMonitors.forEach { NSEvent.removeMonitor($0) }
+        escMonitors.removeAll()
     }
 
     private func positionNearMouse() {
