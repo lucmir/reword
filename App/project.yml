@@ -1,0 +1,32 @@
+name: Reword
+options:
+  bundleIdPrefix: com.lucmir
+  deploymentTarget:
+    macOS: "14.0"
+packages:
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 2.0.0
+  RewordCore:
+    path: ..
+targets:
+  Reword:
+    type: application
+    platform: macOS
+    sources: [Sources]
+    scheme: {}
+    dependencies:
+      - package: KeyboardShortcuts
+      - package: RewordCore
+        product: RewordCore
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Reword
+        LSUIElement: true
+        NSHumanReadableCopyright: "MIT License"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lucmir.reword
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: false
