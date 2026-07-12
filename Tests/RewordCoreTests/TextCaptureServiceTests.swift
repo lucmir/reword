@@ -83,4 +83,25 @@ final class TextCaptureServiceTests: XCTestCase {
 
         XCTAssertEqual(clip.replacedWith, ["new"])
     }
+
+    func testEmptyClipboardResultThrowsNoSelection() {
+        let ax = FakeStrategy(capture: .failure(.strategyFailed))
+        let clip = FakeStrategy(capture: .success(""))
+        let service = TextCaptureService(accessibility: ax, clipboard: clip)
+
+        XCTAssertThrowsError(try service.captureSelection()) { error in
+            XCTAssertEqual(error as? CaptureError, .noSelection)
+        }
+    }
+
+    func testReplaceViaAccessibilitySucceedsWithoutFallback() throws {
+        let ax = FakeStrategy()
+        let clip = FakeStrategy()
+        let service = TextCaptureService(accessibility: ax, clipboard: clip)
+
+        try service.replaceSelection(with: "new", using: .accessibility)
+
+        XCTAssertEqual(ax.replacedWith, ["new"])
+        XCTAssertEqual(clip.replacedWith, [])
+    }
 }
