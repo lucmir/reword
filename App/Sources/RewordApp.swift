@@ -11,22 +11,24 @@ final class AppServices: ObservableObject {
         accessibility: AccessibilityCaptureStrategy(),
         clipboard: ClipboardCaptureStrategy()
     )
+    let panel = PreviewPanelController()
+    private(set) lazy var provider: AIProvider = AnthropicProvider(
+        apiKey: { [secretStore] in secretStore.get() },
+        model: { UserDefaults.standard.string(forKey: "model") ?? "claude-opus-4-8" }
+    )
+    private(set) lazy var coordinator = TransformCoordinator(
+        captureService: captureService,
+        provider: provider,
+        promptStore: promptStore,
+        panel: panel
+    )
     private var hotkeyManager: HotkeyManager?
 
     private init() {}
 
     func start() {
         hotkeyManager = HotkeyManager { [weak self] in
-            self?.handleTransform()
-        }
-    }
-
-    func handleTransform() {
-        do {
-            let captured = try captureService.captureSelection()
-            NSLog("Reword captured (\(captured.method)): \(captured.text)")
-        } catch {
-            NSLog("Reword capture failed: \(error)")
+            self?.coordinator.run()
         }
     }
 }
