@@ -10,7 +10,7 @@
   ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-  <img src="docs/assets/rewrite-in-gmail.png" width="800" alt="Reword rewriting a rough draft inside Gmail: messy text selected, preview panel showing the polished version">
+  <img src="docs/assets/demo.gif" width="760" alt="Reword demo: select rough text in Gmail, press the hotkey, review the rewrite, and apply it in place">
 </div>
 
 Select text in any app — Slack, Gmail, your editor, a terminal — press **⇧⌘R**, review the AI-rewritten version in a floating panel, and apply it in place. Prompts are fully yours to edit.
@@ -24,7 +24,11 @@ Select text in any app — Slack, Gmail, your editor, a terminal — press **⇧
 - **Native and lightweight** — Swift + SwiftUI menu bar app. No Electron, no Dock icon, no background daemon.
 
 <div align="center">
+  <img src="docs/assets/rewrite-in-gmail.png" width="720" alt="Rough draft selected in Gmail with the Rewrite panel showing the polished version">
+  <br><em>The rough draft, and the rewrite — nothing changes until you click Apply.</em>
+  <br><br>
   <img src="docs/assets/settings.png" width="520" alt="Settings window: editable prompt presets with a starred default">
+  <br><em>Edit the built-in presets or add your own.</em>
 </div>
 
 ## Install
@@ -80,10 +84,12 @@ Real Accessibility behavior varies by app; verified by hand:
 | TextEdit | ✅ | ✅ |
 | Slack | ✅ | ✅ |
 | Gmail (Chrome) | ✅ | ✅ |
-| Notes | ☐ | ☐ |
-| Safari | ☐ | ☐ |
-| Mail | ☐ | ☐ |
-| Terminal | ☐ | ☐ |
+| Notes | ✅ | ✅ |
+| Safari | ✅ | ✅ |
+| Mail | ✅ | ✅ |
+| Terminal | ✅ | ⚠️ pastes at cursor |
+
+⚠️ Terminals don't expose an editable text selection, so Apply falls back to pasting the rewrite at the cursor rather than replacing the selection.
 
 ## Development
 
