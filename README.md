@@ -24,7 +24,7 @@ Select text in any app — Slack, Gmail, your editor, a terminal — press **⇧
 - **Native and lightweight** — Swift + SwiftUI menu bar app. No Electron, no Dock icon, no background daemon.
 
 <div align="center">
-  <img src="docs/assets/rewrite-in-gmail.png" width="720" alt="Rough draft selected in Gmail with the Rewrite panel showing the polished version">
+  <img src="docs/assets/rewrite-in-gmail.png" width="480" alt="Rough draft selected in Gmail with the Rewrite panel showing the polished version">
   <br><em>The rough draft, and the rewrite — nothing changes until you click Apply.</em>
   <br><br>
   <img src="docs/assets/settings.png" width="520" alt="Settings window: editable prompt presets with a starred default">
