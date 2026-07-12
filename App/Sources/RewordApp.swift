@@ -52,8 +52,7 @@ struct RewordApp: App {
             }
         }
         Settings {
-            Text("Settings coming soon")
-                .frame(width: 400, height: 200)
+            SettingsView()
         }
     }
 }
