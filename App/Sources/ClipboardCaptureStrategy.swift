@@ -22,10 +22,18 @@ final class ClipboardCaptureStrategy: TextCaptureStrategy {
         let saved = pasteboard.string(forType: .string)
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+        let pasteChangeCount = pasteboard.changeCount
         postKeystroke(virtualKey: CGKeyCode(kVK_ANSI_V))
-        // Give the paste time to land before restoring the clipboard.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            self?.restore(saved)
+        // Restore after the paste has had time to land. Captures by value —
+        // must fire even if this strategy instance is gone.
+        let pasteboard = self.pasteboard
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            // Skip restore if something else has since written to the pasteboard.
+            guard pasteboard.changeCount == pasteChangeCount else { return }
+            pasteboard.clearContents()
+            if let saved {
+                pasteboard.setString(saved, forType: .string)
+            }
         }
     }
 
