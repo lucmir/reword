@@ -10,7 +10,7 @@
   ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-  <img src="docs/assets/demo.gif" width="760" alt="Reword demo: select rough text in Gmail, press the hotkey, review the rewrite, and apply it in place">
+  <img src="docs/assets/demo.gif" width="520" alt="Reword demo: select rough text in Gmail, press the hotkey, review the rewrite, and apply it in place">
 </div>
 
 Select text in any app — Slack, Gmail, your editor, a terminal — press **⇧⌘R**, review the AI-rewritten version in a floating panel, and apply it in place. Prompts are fully yours to edit.
