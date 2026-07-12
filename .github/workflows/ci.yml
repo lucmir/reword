@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run core tests
+        run: swift test
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build app
+        run: |
+          cd App
+          xcodegen generate
+          xcodebuild -project Reword.xcodeproj -scheme Reword \
+            -configuration Debug -derivedDataPath build \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_ALLOWED=NO build
