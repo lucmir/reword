@@ -4,6 +4,9 @@ import XCTest
 final class FakeStrategy: TextCaptureStrategy {
     var captureResult: Result<String, CaptureError>
     var replaceError: CaptureError?
+    /// Mirrors a well-behaved app: after a replace, reading the selection
+    /// reflects the new text. Set false to model Chromium-style silent no-ops.
+    var updatesCaptureOnReplace = true
     private(set) var captureCalls = 0
     private(set) var replacedWith: [String] = []
 
@@ -19,6 +22,9 @@ final class FakeStrategy: TextCaptureStrategy {
     func replaceSelection(with text: String) throws {
         if let error = replaceError { throw error }
         replacedWith.append(text)
+        if updatesCaptureOnReplace {
+            captureResult = .success(text)
+        }
     }
 }
 
@@ -96,6 +102,31 @@ final class TextCaptureServiceTests: XCTestCase {
 
     func testReplaceViaAccessibilitySucceedsWithoutFallback() throws {
         let ax = FakeStrategy()
+        let clip = FakeStrategy()
+        let service = TextCaptureService(accessibility: ax, clipboard: clip)
+
+        try service.replaceSelection(with: "new", using: .accessibility)
+
+        XCTAssertEqual(ax.replacedWith, ["new"])
+        XCTAssertEqual(clip.replacedWith, [])
+    }
+
+    func testSilentlyIgnoredAXReplaceFallsBackToClipboard() throws {
+        // Chromium apps (Slack, Chrome/Gmail) return success for AX selected-text
+        // writes without applying them — the selection still holds the old text.
+        let ax = FakeStrategy(capture: .success("old text"))
+        ax.updatesCaptureOnReplace = false
+        let clip = FakeStrategy()
+        let service = TextCaptureService(accessibility: ax, clipboard: clip)
+
+        try service.replaceSelection(with: "new", using: .accessibility)
+
+        XCTAssertEqual(ax.replacedWith, ["new"], "AX write should still be attempted first")
+        XCTAssertEqual(clip.replacedWith, ["new"], "no-op AX write must fall back to paste")
+    }
+
+    func testVerifiedAXReplaceDoesNotFallBack() throws {
+        let ax = FakeStrategy(capture: .success("old text"))
         let clip = FakeStrategy()
         let service = TextCaptureService(accessibility: ax, clipboard: clip)
 
