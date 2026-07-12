@@ -47,7 +47,6 @@ struct APISettingsView: View {
     private func testConnection() {
         saveKey()
         testing = true
-        status = nil
         Task {
             do {
                 _ = try await AppServices.shared.provider.transform(

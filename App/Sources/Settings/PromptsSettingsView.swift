@@ -43,6 +43,7 @@ struct PromptsSettingsView: View {
             if let id = selectedID,
                let preset = store.presets.first(where: { $0.id == id }) {
                 PresetEditor(preset: preset, store: store)
+                    .id(preset.id)
                     .padding()
             } else {
                 Text("Select a preset")
