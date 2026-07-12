@@ -13,7 +13,10 @@ targets:
   Reword:
     type: application
     platform: macOS
-    sources: [Sources]
+    sources:
+      - Sources
+      - path: Resources
+        buildPhase: resources
     scheme: {}
     dependencies:
       - package: KeyboardShortcuts
@@ -23,6 +26,7 @@ targets:
       path: Info.plist
       properties:
         CFBundleDisplayName: Reword
+        CFBundleIconFile: AppIcon
         LSUIElement: true
         NSHumanReadableCopyright: "MIT License"
     settings:
