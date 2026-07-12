@@ -57,7 +57,16 @@ public final class TextCaptureService {
             try clipboard.replaceSelection(with: text)
         case .accessibility:
             do {
+                let before = try? accessibility.captureSelection()
                 try accessibility.replaceSelection(with: text)
+                // Some apps (Chromium-based: Slack, Chrome, Electron) report
+                // success for AX selected-text writes without applying them.
+                // If the selection still holds the old text, paste instead.
+                if let before, !before.isEmpty, before != text,
+                   let after = try? accessibility.captureSelection(),
+                   after == before {
+                    try clipboard.replaceSelection(with: text)
+                }
             } catch {
                 try clipboard.replaceSelection(with: text)
             }
