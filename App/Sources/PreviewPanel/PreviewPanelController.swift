@@ -8,6 +8,11 @@ private final class DismissablePanel: NSPanel {
     override func cancelOperation(_ sender: Any?) {
         onCancel()
     }
+    /// The titlebar close button triggers this; route through the coordinator's
+    /// dismiss (cancels in-flight work) instead of closing the window directly.
+    override func performClose(_ sender: Any?) {
+        onCancel()
+    }
     override var canBecomeKey: Bool { true }
 }
 
@@ -46,12 +51,14 @@ final class PreviewPanelController {
         if panel == nil {
             let panel = DismissablePanel(
                 contentRect: NSRect(x: 0, y: 0, width: 400, height: 240),
-                styleMask: [.titled, .nonactivatingPanel, .fullSizeContentView],
+                styleMask: [.titled, .closable, .nonactivatingPanel, .fullSizeContentView],
                 backing: .buffered,
                 defer: false
             )
             panel.titleVisibility = .hidden
             panel.titlebarAppearsTransparent = true
+            panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            panel.standardWindowButton(.zoomButton)?.isHidden = true
             panel.isFloatingPanel = true
             panel.level = .floating
             panel.hidesOnDeactivate = false

@@ -9,18 +9,13 @@ struct PreviewPanelView: View {
             content
             footer
         }
-        .padding(14)
+        .padding([.horizontal, .bottom], 14)
+        .padding(.top, 30) // clears the titlebar close button
         .frame(width: 400)
     }
 
     private var header: some View {
         HStack {
-            Button {
-                model.onDismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-            }
-            .buttonStyle(.plain)
             Image(systemName: "wand.and.stars")
             Picker("", selection: $model.selectedPresetID) {
                 ForEach(model.presets) { preset in
