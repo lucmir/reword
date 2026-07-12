@@ -3,3 +3,4 @@
 xcuserdata/
 *.xcodeproj
 App/build/
+App/Info.plist
