@@ -5,8 +5,10 @@ import RewordCore
 final class ClipboardCaptureStrategy: TextCaptureStrategy {
     private let pasteboard = NSPasteboard.general
 
+    private typealias PasteboardSnapshot = [[NSPasteboard.PasteboardType: Data]]
+
     func captureSelection() throws -> String {
-        let saved = pasteboard.string(forType: .string)
+        let saved = snapshot()
         defer { restore(saved) }
 
         let countBefore = pasteboard.changeCount
@@ -19,7 +21,7 @@ final class ClipboardCaptureStrategy: TextCaptureStrategy {
     }
 
     func replaceSelection(with text: String) throws {
-        let saved = pasteboard.string(forType: .string)
+        let saved = snapshot()
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
         let pasteChangeCount = pasteboard.changeCount
@@ -30,17 +32,37 @@ final class ClipboardCaptureStrategy: TextCaptureStrategy {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             // Skip restore if something else has since written to the pasteboard.
             guard pasteboard.changeCount == pasteChangeCount else { return }
-            pasteboard.clearContents()
-            if let saved {
-                pasteboard.setString(saved, forType: .string)
-            }
+            Self.restore(saved, on: pasteboard)
         }
     }
 
-    private func restore(_ saved: String?) {
+    private func snapshot() -> PasteboardSnapshot {
+        (pasteboard.pasteboardItems ?? []).map { item in
+            var entry: [NSPasteboard.PasteboardType: Data] = [:]
+            for type in item.types {
+                if let data = item.data(forType: type) {
+                    entry[type] = data
+                }
+            }
+            return entry
+        }
+    }
+
+    private func restore(_ saved: PasteboardSnapshot) {
+        Self.restore(saved, on: pasteboard)
+    }
+
+    private static func restore(_ saved: PasteboardSnapshot, on pasteboard: NSPasteboard) {
         pasteboard.clearContents()
-        if let saved {
-            pasteboard.setString(saved, forType: .string)
+        let items = saved.map { entry -> NSPasteboardItem in
+            let item = NSPasteboardItem()
+            for (type, data) in entry {
+                item.setData(data, forType: type)
+            }
+            return item
+        }
+        if !items.isEmpty {
+            pasteboard.writeObjects(items)
         }
     }
 

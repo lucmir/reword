@@ -70,4 +70,18 @@ final class PromptStoreTests: XCTestCase {
         XCTAssertEqual(store.presets, before)
         XCTAssertEqual(store.presets.filter(\.isDefault).count, 1)
     }
+
+    func testUpdatePreservesStoredDefaultFlag() {
+        let store = PromptStore(fileURL: tempURL)
+        let target = store.presets[1]
+        store.setDefault(id: target.id)
+
+        var stale = target           // simulates the editor's stale copy
+        stale.prompt = "edited"      // isDefault is still false in the copy
+        store.update(stale)
+
+        XCTAssertEqual(store.defaultPreset.id, target.id)
+        XCTAssertEqual(store.presets.filter(\.isDefault).count, 1)
+        XCTAssertEqual(store.presets[1].prompt, "edited")
+    }
 }

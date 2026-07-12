@@ -104,4 +104,15 @@ final class TextCaptureServiceTests: XCTestCase {
         XCTAssertEqual(ax.replacedWith, ["new"])
         XCTAssertEqual(clip.replacedWith, [])
     }
+
+    func testPermissionDeniedPropagatesWithoutClipboardFallback() {
+        let ax = FakeStrategy(capture: .failure(.permissionDenied))
+        let clip = FakeStrategy(capture: .success("from clipboard"))
+        let service = TextCaptureService(accessibility: ax, clipboard: clip)
+
+        XCTAssertThrowsError(try service.captureSelection()) { error in
+            XCTAssertEqual(error as? CaptureError, .permissionDenied)
+        }
+        XCTAssertEqual(clip.captureCalls, 0)
+    }
 }

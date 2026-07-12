@@ -36,8 +36,15 @@ public final class TextCaptureService {
     }
 
     public func captureSelection() throws -> CapturedText {
-        if let text = try? accessibility.captureSelection(), !text.isEmpty {
-            return CapturedText(text: text, method: .accessibility)
+        do {
+            let text = try accessibility.captureSelection()
+            if !text.isEmpty {
+                return CapturedText(text: text, method: .accessibility)
+            }
+        } catch CaptureError.permissionDenied {
+            throw CaptureError.permissionDenied
+        } catch {
+            // fall through to clipboard
         }
         let text = try clipboard.captureSelection()
         guard !text.isEmpty else { throw CaptureError.noSelection }

@@ -32,7 +32,9 @@ public final class PromptStore: ObservableObject {
 
     public func update(_ preset: Preset) {
         guard let index = presets.firstIndex(where: { $0.id == preset.id }) else { return }
-        presets[index] = preset
+        var updated = preset
+        updated.isDefault = presets[index].isDefault
+        presets[index] = updated
         save()
     }
 
